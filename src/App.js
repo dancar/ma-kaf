@@ -4,7 +4,7 @@ import './App.css';
 
 const LINKS = {
   Contact: {
-    "Gmail"       : "mailto:dan@carmon.org.il"
+    "Email"       : "mailto:dan@carmon.org.il"
   },
 
   Personal: {
@@ -63,7 +63,7 @@ class App extends Component {
       3000,
       CLEAR,
       [
-        "Follow one of this links:", NEWLINE
+        "Follow ME with this links:", NEWLINE
       ].concat(links).concat([
         NEWLINE,
         "Good luck,", NEWLINE,
