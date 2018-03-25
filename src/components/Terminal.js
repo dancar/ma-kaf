@@ -7,41 +7,87 @@ export default class Terminal extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      frames: this.generateFrames(props.content),
       index: 0
     }
-    this.writeText = this.writeText.bind(this)
+    this.nextFrame = this.nextFrame.bind(this)
   }
 
-  writeText () {
-    const { index } = this.state
-    if (index === this.props.text.length) {
-      if (this.props.onFinishTyping) {
-        this.props.onFinishTyping()
-      }
+  componentDidMount () {
+    setTimeout(this.nextFrame, TYPING_INTERVAL)
+  }
+
+  nextFrame () {
+    let { index } = this.state
+    const { onFinishTyping } = this.props
+    const nextIndex = index + 1
+
+    if (nextIndex >= this.state.frames.length) {
+      onFinishTyping && onFinishTyping()
       return
     }
 
     this.setState({
-      index: index + 1
-    }, () => window.setTimeout(this.writeText, TYPING_INTERVAL))
-
+      index: nextIndex
+    })
+    window.setTimeout(this.nextFrame, TYPING_INTERVAL)
   }
 
-  componentDidMount () {
-
-  }
-
-  componentWillReceiveProps ({text}) {
-    if (this.props.text !==  text) {
-      this.setState({index: 0}, this.writeText)
+componentWillReceiveProps ({content}) {
+    if (this.props.content !==  content) {
+      this.setState({
+        index: 0,
+        frames: this.generateFrames(content)
+      }, this.nextFrame)
     }
   }
 
+  generateFrames([item, ...tail], acc = []) {
+    if (item === undefined) {
+      return acc
+    }
+    console.log('<-DANDEBUG-> Terminal.js\\ 49: item:', item);
+
+    if (typeof item === "string") {
+      item = {
+        type: "string",
+        string: item
+      }
+    }
+
+    const previous = acc.length > 0 ? acc[acc.length - 1] : []
+    console.log('<-DANDEBUG-> Terminal.js\\ 58: item.type:', item.type);
+
+    switch (item.type) {
+    case "string":
+      const stringFrames = this.generateStringFrames(item.string)
+            .map(substr => previous.concat([substr]))
+      return this.generateFrames(tail, acc.concat(stringFrames))
+    case "link":
+      const linkFrames = this.generateStringFrames(item.text)
+        .map(substr => previous.concat([(
+            <a href={item.href}>
+              {substr}
+            </a>
+        )]))
+      return this.generateFrames(tail, acc.concat(linkFrames))
+    }
+  }
+
+
+  generateStringFrames(str) {
+    return Array
+      .from(new Array(str.length))
+      .map((_, i) =>
+           str.substring(0, i + 1))
+  }
+
+
   render () {
-    const actualText = this.props.text.substring(0, this.state.index)
+    const items = this.state.frames[this.state.index] || [""]
     return (
       <div className="terminal">
-        {actualText}<Block/>
+        { items }<Block/>
       </div>
     )
   }
