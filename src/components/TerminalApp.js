@@ -8,7 +8,7 @@ export default class TerminalApp extends React.Component {
     super(props)
     this.state = {
       itemIndex: 0,
-      currentContent: ""
+      currentContent: [""]
     }
     this.run = this.run.bind(this)
   }
@@ -18,23 +18,21 @@ export default class TerminalApp extends React.Component {
   }
 
   run () {
-    const {itemIndex}  = this.state
-    const item = this.props.app[itemIndex]
+    const { itemIndex }  = this.state
+    if (itemIndex === this.props.app.length) {
+      return
+    }
+    let item = this.props.app[itemIndex]
 
-    if (typeof item === "string" || item instanceof Array) {
-      this.setState({
-        itemIndex: itemIndex + 1,
-        currentContent : item
-      })
+    if (typeof item === "string" ) {
+      item = [item]
     }
 
     else if (item === CLEAR) {
-      this.setState({
-        itemIndex: itemIndex + 1,
-        currentContent: ""
-      })
+      item = [""]
     }
-    else if (typeof item === "number") {
+
+    if (typeof item === "number") {
       window.setTimeout( () => {
         this.setState({
           itemIndex: itemIndex + 1
@@ -42,6 +40,12 @@ export default class TerminalApp extends React.Component {
       }, item)
     }
 
+    else {
+      this.setState({
+        itemIndex: itemIndex + 1,
+        currentContent : item
+      })
+    }
   }
 
   render () {

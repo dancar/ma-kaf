@@ -14,7 +14,7 @@ export default class Terminal extends React.Component {
   }
 
   componentDidMount () {
-    setTimeout(this.nextFrame, TYPING_INTERVAL)
+    // setTimeout(this.nextFrame, TYPING_INTERVAL)
   }
 
   nextFrame () {
@@ -33,12 +33,12 @@ export default class Terminal extends React.Component {
     window.setTimeout(this.nextFrame, TYPING_INTERVAL)
   }
 
-componentWillReceiveProps ({content}) {
+  componentWillReceiveProps ({content}) {
     if (this.props.content !==  content) {
       this.setState({
         index: 0,
         frames: this.generateFrames(content)
-      }, this.nextFrame)
+      }, () => setTimeout(this.nextFrame, TYPING_INTERVAL))
     }
   }
 
@@ -46,40 +46,43 @@ componentWillReceiveProps ({content}) {
     if (item === undefined) {
       return acc
     }
-    console.log('<-DANDEBUG-> Terminal.js\\ 49: item:', item);
 
     if (typeof item === "string") {
       item = {
-        type: "string",
+        type: "text",
         string: item
       }
     }
 
     const previous = acc.length > 0 ? acc[acc.length - 1] : []
-    console.log('<-DANDEBUG-> Terminal.js\\ 58: item.type:', item.type);
 
+    let newItems
     switch (item.type) {
-    case "string":
-      const stringFrames = this.generateStringFrames(item.string)
+    case "text":
+      newItems = this.generateStringFrames(item.string)
             .map(substr => previous.concat([substr]))
-      return this.generateFrames(tail, acc.concat(stringFrames))
+      break
+
     case "link":
-      const linkFrames = this.generateStringFrames(item.text)
+      newItems = this.generateStringFrames(item.text)
         .map(substr => previous.concat([(
             <a href={item.href}>
               {substr}
             </a>
         )]))
-      return this.generateFrames(tail, acc.concat(linkFrames))
-    }
-  }
+      break
 
+    case "newline":
+      newItems = [(<br/>)]
+    }
+    return this.generateFrames(tail, acc.concat(previous.concat(newItems)))
+  }
 
   generateStringFrames(str) {
     return Array
-      .from(new Array(str.length))
+      .from(new Array(str.length + 1))
       .map((_, i) =>
-           str.substring(0, i + 1))
+           str.substring(0, i))
   }
 
 
