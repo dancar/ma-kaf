@@ -23,6 +23,6 @@ export default class Block extends React.Component {
   }
 
   render () {
-    return this.state.visible ? '▓' : ' '
+    return this.state.visible ? ' ▓' : ' '
   }
 }

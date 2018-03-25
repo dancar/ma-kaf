@@ -2,6 +2,7 @@ import React from 'react'
 import Terminal from './Terminal'
 
 export const CLEAR = Symbol('clear')
+export const NEWLINE = { type: "newline" }
 export default class TerminalApp extends React.Component {
 
   constructor (props) {

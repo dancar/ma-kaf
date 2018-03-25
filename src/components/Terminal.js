@@ -2,7 +2,9 @@ import React from 'react'
 import Block from './Block'
 import './terminal.css'
 
-const TYPING_INTERVAL = 100
+// const TYPING_INTERVAL = 10
+const TYPING_INTERVAL = 30
+// const TYPING_INTERVAL = 100
 export default class Terminal extends React.Component {
   constructor (props) {
     super(props)
@@ -54,7 +56,9 @@ export default class Terminal extends React.Component {
       }
     }
 
-    const previous = acc.length > 0 ? acc[acc.length - 1] : []
+    const previous = acc.length > 0
+          ? acc[acc.length - 1]
+          : []
 
     let newItems
     switch (item.type) {
@@ -66,16 +70,19 @@ export default class Terminal extends React.Component {
     case "link":
       newItems = this.generateStringFrames(item.text)
         .map(substr => previous.concat([(
-            <a href={item.href}>
+            <a href={item.href} target="_new">
               {substr}
             </a>
         )]))
       break
 
     case "newline":
-      newItems = [(<br/>)]
+      newItems = [previous.concat([(<br/>)])]
+      break
     }
-    return this.generateFrames(tail, acc.concat(previous.concat(newItems)))
+
+    const newAcc = acc.concat(newItems)
+    return this.generateFrames(tail, newAcc)
   }
 
   generateStringFrames(str) {
