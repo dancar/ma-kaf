@@ -70,7 +70,7 @@ export default class Terminal extends React.Component {
     case "link":
       newItems = this.generateStringFrames(item.text)
         .map(substr => previous.concat([(
-            <a href={item.href} target="_new">
+            <a href={item.href} target="_blank">
               {substr}
             </a>
         )]))
