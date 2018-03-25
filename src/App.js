@@ -63,7 +63,7 @@ class App extends Component {
       3000,
       CLEAR,
       [
-        "Follow ME with this links:", NEWLINE
+        "Follow ME with these links:", NEWLINE
       ].concat(links).concat([
         NEWLINE,
         "Good luck,", NEWLINE,
