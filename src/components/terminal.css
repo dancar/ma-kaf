@@ -1,0 +1,18 @@
+
+.terminal {
+  background: black;
+  color: green;
+  /* font-family: "DejaVu Sans Mono","Liberation Mono", "monospace"; */
+  font-family: monospace;
+
+  font-size: 18px;
+  font-style: normal;
+  font-variant: normal;
+  padding: 8px;
+  border: none;
+  text-align: left;
+
+}
+.terminal a {
+  color: green;
+}

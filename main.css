@@ -1,0 +1,15 @@
+html {
+  padding: 0px;
+  margin: 0px;
+  width: 100%;
+
+}
+body {
+  padding: 0px;
+  margin: 0px;
+  width: 100%;
+}
+
+.image-cache {
+  display: none;
+}
