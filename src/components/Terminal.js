@@ -3,7 +3,8 @@ import Block from './Block'
 import './terminal.css'
 
 // const TYPING_INTERVAL = 10
-const TYPING_INTERVAL = 30
+// const TYPING_INTERVAL = 30
+const TYPING_INTERVAL = 70
 // const TYPING_INTERVAL = 100
 export default class Terminal extends React.Component {
   constructor (props) {

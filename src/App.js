@@ -62,8 +62,11 @@ class App extends Component {
       "The Matrix has you...",
       3000,
       CLEAR,
+      "Follow the white rabbit,",
+      3000,
+      CLEAR,
       [
-        "Follow ME with these links:", NEWLINE
+        "Or follow ME with these links:", NEWLINE
       ].concat(links).concat([
         NEWLINE,
         "Good luck,", NEWLINE,
