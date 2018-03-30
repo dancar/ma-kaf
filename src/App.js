@@ -1,6 +1,8 @@
+import tracker from './tracker'
 import React, { Component } from 'react';
 import TerminalApp, { CLEAR, NEWLINE } from './components/TerminalApp'
 import './App.css';
+
 
 const LINKS = [
   ["Social", [
@@ -30,10 +32,19 @@ class App extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      page: "main",
       app: this.generateApp()
     }
+    this.handleFinishTyping = this.handleFinishTyping.bind(this)
   }
 
+  handleFinishTyping () {
+    tracker.track("finished typing", {page: this.state.page})
+  }
+
+  componentDidMount () {
+    tracker.track("app mount")
+  }
   flatten (arr) {
     return arr.reduce((acc, cur ) => acc.concat(cur), [])
   }
@@ -60,12 +71,16 @@ class App extends Component {
       }
     ]]
 
-    this.setState({app})
+    tracker.track("linked click", {
+      text, href
+    })
+
+    this.setState({app, page: text})
   }
 
   main () {
     const app = [["Find me on:"].concat(this.makeLinks())]
-    this.setState({app})
+    this.setState({app, page: "main2"})
   }
 
   makeLinks() {
@@ -90,14 +105,13 @@ class App extends Component {
 
   generateApp () {
     return [
-      "",
       1000,
       'Wake up, Neo...',
-      // 3000,
+      3000,
       "The Matrix has you...",
-      // 3000,
+      3000,
       "Follow the white rabbit,",
-      // 3000,
+      3000,
       [
         "Or follow ME with these links:", NEWLINE
       ].concat(this.makeLinks()).concat([
@@ -107,10 +121,13 @@ class App extends Component {
       ])
     ]
   }
+
   render() {
     return (
       <div className="App">
-        <TerminalApp app={this.state.app} />
+        <TerminalApp
+          onFinishTyping={this.handleFinishTyping}
+          app={this.state.app} />
       </div>
     );
   }
