@@ -2,50 +2,62 @@ import React from 'react'
 import Block from './Block'
 import './terminal.css'
 
-// const TYPING_INTERVAL = 10
+const TYPING_INTERVAL = 10
 // const TYPING_INTERVAL = 30
-const TYPING_INTERVAL = 70
+// const TYPING_INTERVAL = 70
 // const TYPING_INTERVAL = 100
 export default class Terminal extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {
-      frames: this.generateFrames(props.content),
-      index: 0
-    }
     this.nextFrame = this.nextFrame.bind(this)
+    this.state = {
+      index: 0,
+      frames: []
+    }
   }
 
   componentDidMount () {
-    // setTimeout(this.nextFrame, TYPING_INTERVAL)
+    this.setState({
+      stepFn: window.setInterval(this.nextFrame, TYPING_INTERVAL)
+    })
+  }
+
+  componentWillUnmount () {
+    window.clearInterval(this.state.stepFn)
+  }
+
+
+  static getDerivedStateFromProps (nextProps, prevState) {
+    if (nextProps.content !== prevState.content) {
+      const frames = Terminal.generateFrames(nextProps.content)
+      return {
+        content: nextProps.content,
+        onFinishTyping: nextProps.onFinishTyping,
+        frames,
+        index: 0
+      }
+    }
+    return null
   }
 
   nextFrame () {
-    let { index } = this.state
-    const { onFinishTyping } = this.props
-    const nextIndex = index + 1
+    let { index,  onFinishTyping } = this.state
 
-    if (nextIndex >= this.state.frames.length) {
-      onFinishTyping && onFinishTyping()
-      return
+    if (index + 1 === this.state.frames.length) {
+      if (onFinishTyping) {
+        this.setState({
+          onFinishTyping: null
+        }, () => onFinishTyping())
+      }
     }
-
-    this.setState({
-      index: nextIndex
-    })
-    window.setTimeout(this.nextFrame, TYPING_INTERVAL)
-  }
-
-  componentWillReceiveProps ({content}) {
-    if (this.props.content !==  content) {
+    else {
       this.setState({
-        index: 0,
-        frames: this.generateFrames(content)
-      }, () => setTimeout(this.nextFrame, TYPING_INTERVAL))
+        index: index + 1
+      })
     }
   }
 
-  generateFrames([item, ...tail], acc = []) {
+  static generateFrames([item, ...tail], acc = []) {
     if (item === undefined) {
       return acc
     }
@@ -64,14 +76,18 @@ export default class Terminal extends React.Component {
     let newItems
     switch (item.type) {
     case "text":
-      newItems = this.generateStringFrames(item.string)
+      newItems = Terminal.generateStringFrames(item.string)
             .map(substr => previous.concat([substr]))
       break
 
     case "link":
-      newItems = this.generateStringFrames(item.text)
+      newItems = Terminal.generateStringFrames(item.text)
         .map(substr => previous.concat([(
-            <a href={item.href} target="_blank">
+          <a
+            key={item.text}
+            href={item.href}
+            onClick={item.onClick}
+            target="_blank">
               {substr}
             </a>
         )]))
@@ -83,10 +99,10 @@ export default class Terminal extends React.Component {
     }
 
     const newAcc = acc.concat(newItems)
-    return this.generateFrames(tail, newAcc)
+    return Terminal.generateFrames(tail, newAcc)
   }
 
-  generateStringFrames(str) {
+  static generateStringFrames(str) {
     return Array
       .from(new Array(str.length + 1))
       .map((_, i) =>

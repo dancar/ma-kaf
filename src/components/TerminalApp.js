@@ -9,18 +9,31 @@ export default class TerminalApp extends React.Component {
     super(props)
     this.state = {
       itemIndex: 0,
-      currentContent: [""]
+      currentContent: []
     }
     this.run = this.run.bind(this)
+    this.handleFinishTyping = this.handleFinishTyping.bind(this)
   }
 
-  componentDidMount () {
+    static getDerivedStateFromProps (nextProps, prevState) {
+      if (nextProps.app !== prevState.app) {
+        return {
+          app: nextProps.app,
+          itemIndex: 0,
+          currentContent: [""]
+        }
+      }
+      return null
+    }
+
+  handleFinishTyping() {
     this.run()
   }
 
   run () {
     const { itemIndex }  = this.state
     if (itemIndex === this.props.app.length) {
+      (this.props.onFinishTyping || (() => null))()
       return
     }
     let item = this.props.app[itemIndex]
@@ -52,7 +65,7 @@ export default class TerminalApp extends React.Component {
   render () {
     return (
       <Terminal
-        onFinishTyping={this.run}
+        onFinishTyping={this.handleFinishTyping}
         content={this.state.currentContent}
         />
     )
